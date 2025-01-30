@@ -105,7 +105,7 @@ for i in range(6):
 """
 #Assignment 5
 
-"""
+
 m1 = buildTree(m.monk1, m.attributes)
 print("Monk 1 error:", 1-check(m1, m.monk1test))
 
@@ -117,7 +117,7 @@ print("Monk 3 error:", 1-check(m3, m.monk3test))
 
 #drawTree(m2)
 
-"""
+
 
 def partition(data, fraction):
     ldata = list(data)
@@ -130,7 +130,8 @@ fractions = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9]
 
 # loop through all fractions
 for f in fractions:
-    
+    best_tree = []
+
     all_iterations_errors = []
     
     # Run 1000 iterations
@@ -140,12 +141,15 @@ for f in fractions:
 
         tree = buildTree(train_data, m.attributes) # build tree and pruned tress
         pruned_trees = allPruned(tree)
-        
+
+        e_t = 1
         # for each pruned tree, calculate error on test set
         for ind_tree in pruned_trees:
-            e = 1-check(ind_tree, m.monk1test)  
-            errors.append(e)
-        
+            e = 1-check(ind_tree, val_data)  
+            if e < e_t:
+                e_t = e
+                best_tree = ind_tree
+        errors.append(e_t)
         # Store mean error for this iteration
         if errors:  # Only if we have pruned trees
             all_iterations_errors.append(np.mean(errors))
@@ -154,7 +158,10 @@ for f in fractions:
     print("Fraction", f)
     print("Mean error:", np.mean(all_iterations_errors))
     print("Std error:", np.std(all_iterations_errors))
+    final_error = 1-check(best_tree, m.monk1)
+    print("Final error:", final_error)
     print()
+
 
 
 # bias variance tradeoff for
