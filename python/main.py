@@ -1,6 +1,6 @@
 from monkdata import Sample
 import monkdata as m
-from dtree import entropy,averageGain,select
+from dtree import entropy,averageGain,select, buildTree, check
 
 
 #Assignment 0
@@ -99,3 +99,14 @@ print("MONK-2 Entropy After Splitting")
 for i in range(6):  
     print_split_entropy(m.monk3, m.attributes[i])
     print() 
+
+
+#Assignment 5
+m1 = buildTree(m.monk1, m.attributes)
+print("Monk 1 error:", 1-check(m1, m.monk1test))
+
+m2 = buildTree(m.monk2, m.attributes)
+print("Monk 2 error:", 1-check(m2, m.monk2test))
+
+m3 = buildTree(m.monk3, m.attributes)
+print("Monk 3 error:", 1-check(m3, m.monk3test))
