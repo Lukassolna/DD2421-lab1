@@ -128,34 +128,69 @@ def partition(data, fraction):
 
 fractions = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9]
 
-# loop through all fractions
+# first get the error before we do any pruning
+tree = buildTree(m.monk1, m.attributes)
+unpruned_error = 1-check(tree, m.monk1test)
+print("Unpruned tree error on test set:", unpruned_error)
+print()
+
+
+ 
+means = []
+stds = [] 
+# Loop through all fractions
 for f in fractions:
-    
     all_iterations_errors = []
     
     # Run 1000 iterations
     for i in range(1000):
-        errors = [] 
-        train_data, val_data = partition(m.monk1, f) # split into train and test data
-
-        tree = buildTree(train_data, m.attributes) # build tree and pruned tress
+        # Split data
+        train_data, val_data = partition(m.monk1, f)
+        
+        # Build and get pruned trees
+        tree = buildTree(train_data, m.attributes)
         pruned_trees = allPruned(tree)
+                    
+        # Find best tree using validation data
+        best_val_error = float('inf')
+        best_tree = None
         
-        # for each pruned tree, calculate error on test set
+        # Try each pruned tree on validation set
+
         for ind_tree in pruned_trees:
-            e = 1-check(ind_tree, m.monk1test)  
-            errors.append(e)
+            # calulate error on val_data
+            val_error = 1 - check(ind_tree, val_data)
+            # if its the best one, we choose it
+            if val_error < best_val_error:
+                best_val_error = val_error
+                best_tree = ind_tree
         
-        # Store mean error for this iteration
-        if errors:  # Only if we have pruned trees
-            all_iterations_errors.append(np.mean(errors))
+        # After testing all the pruned trees, use the best one on the full test data
+        if best_tree:
+            test_error = 1 - check(best_tree, m.monk1test)
+            all_iterations_errors.append(test_error)
     
-    # for each fraction, print the average of all the iterations
-    print("Fraction", f)
-    print("Mean error:", np.mean(all_iterations_errors))
-    print("Std error:", np.std(all_iterations_errors))
+    # Store staistics for plotting
+   
+    mean_error = np.mean(all_iterations_errors)
+    std_error = np.std(all_iterations_errors)
+    means.append(mean_error)
+    stds.append(std_error)
+    
+    print(f"Fraction {f}:")
+    print(f"Mean error: {mean_error:.4f}")
+    print(f"Std error: {std_error:.4f}")
     print()
 
+# Plot results
+plt.figure(figsize=(10, 6))
+plt.errorbar(fractions, means, marker='o', label='Pruned Trees')
+plt.axhline(y=unpruned_error, color='r', linestyle='--', label='Unpruned Tree')
+plt.xlabel('Training Set Fraction')
+plt.ylabel('Test Error')
+plt.legend()
+plt.grid(True)
+plt.show()
 
 # bias variance tradeoff for
 """
