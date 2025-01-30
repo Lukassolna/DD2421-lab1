@@ -110,3 +110,14 @@ print("Monk 2 error:", 1-check(m2, m.monk2test))
 
 m3 = buildTree(m.monk3, m.attributes)
 print("Monk 3 error:", 1-check(m3, m.monk3test))
+
+
+# Assignment 6
+"""
+A large tree means high variance because it is varied and makes very specific splits. 
+However, bias is low because it captures a lot of the underlying data patterns.
+
+A small tree has low variance since all the data is grouped together into simpler rules. 
+However, bias is very high since we risk not capturing the true underlying 
+logic by making strong assumptions about the data.
+"""
