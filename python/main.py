@@ -129,3 +129,13 @@ for f in fractions:
     e = 1-check(tree, val_data)
     errors.append(e)
     print("Fraction:", f, ", Error: ", e)
+
+# Assignment 6
+"""
+A large tree means high variance because it is varied and makes very specific splits. 
+However, bias is low because it captures a lot of the underlying data patterns.
+
+A small tree has low variance since all the data is grouped together into simpler rules. 
+However, bias is very high since we risk not capturing the true underlying 
+logic by making strong assumptions about the data.
+"""
