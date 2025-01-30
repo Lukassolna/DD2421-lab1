@@ -1,7 +1,10 @@
 from monkdata import Sample
 import monkdata as m
-from dtree import entropy,averageGain,select, buildTree, check
+from dtree import entropy,averageGain,select, buildTree, check,allPruned
 from drawtree_qt5 import drawTree
+import numpy as np
+import random
+import matplotlib.pyplot as plt
 
 #Assignment 0
 # I think monk2 is the most complex one since we need a lot of indivudal checks/tress to come to the conclusion. 
@@ -52,7 +55,7 @@ low_entropy = [
 
 
 # Assignment 3
-
+"""
 print("MONK1")
 for i in range(0,6): 
     gain = averageGain(m.monk1, m.attributes[i])
@@ -69,7 +72,7 @@ for i in range(0,6):
     gain = averageGain(m.monk3, m.attributes[i])
     print(f"Attribute {m.attributes[i]}: {gain}")
 
-
+"""
 # Assignment 4
 # We want to go from high to low entropy
 # Information gain is exactly this
@@ -84,7 +87,7 @@ def print_split_entropy(data, attribute):
         subset_entropy = entropy(subset)
         print(f"  Value {value}: Entropy = {subset_entropy:.4f}, Size = {len(subset)}")
 
-
+"""
 print("MONK-1 Entropy After Splitting")
 for i in range(6):  
     print_split_entropy(m.monk2, m.attributes[i])
@@ -99,8 +102,10 @@ print("MONK-2 Entropy After Splitting")
 for i in range(6):  
     print_split_entropy(m.monk3, m.attributes[i])
     print() 
-
+"""
 #Assignment 5
+
+"""
 m1 = buildTree(m.monk1, m.attributes)
 print("Monk 1 error:", 1-check(m1, m.monk1test))
 
@@ -112,25 +117,47 @@ print("Monk 3 error:", 1-check(m3, m.monk3test))
 
 #drawTree(m2)
 
-#Assignment 6-7
-import random
+"""
+
 def partition(data, fraction):
     ldata = list(data)
     random.shuffle(ldata)
     breakPoint = int(len(ldata) * fraction)
     return ldata[:breakPoint], ldata[breakPoint:]
 
-fractions = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 
-errors = []
+fractions = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9]
+
+# loop through all fractions
 for f in fractions:
-    train_data, val_data = partition(m.monk1, f)
-    tree=buildTree(train_data, m.attributes)
-    e = 1-check(tree, val_data)
-    errors.append(e)
-    print("Fraction:", f, ", Error: ", e)
+    
+    all_iterations_errors = []
+    
+    # Run 1000 iterations
+    for i in range(1000):
+        errors = [] 
+        train_data, val_data = partition(m.monk1, f) # split into train and test data
 
-# Assignment 6
+        tree = buildTree(train_data, m.attributes) # build tree and pruned tress
+        pruned_trees = allPruned(tree)
+        
+        # for each pruned tree, calculate error on test set
+        for ind_tree in pruned_trees:
+            e = 1-check(ind_tree, m.monk1test)  
+            errors.append(e)
+        
+        # Store mean error for this iteration
+        if errors:  # Only if we have pruned trees
+            all_iterations_errors.append(np.mean(errors))
+    
+    # for each fraction, print the average of all the iterations
+    print("Fraction", f)
+    print("Mean error:", np.mean(all_iterations_errors))
+    print("Std error:", np.std(all_iterations_errors))
+    print()
+
+
+# bias variance tradeoff for
 """
 A large tree means high variance because it is varied and makes very specific splits. 
 However, bias is low because it captures a lot of the underlying data patterns.
