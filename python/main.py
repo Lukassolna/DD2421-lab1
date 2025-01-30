@@ -1,7 +1,7 @@
 from monkdata import Sample
 import monkdata as m
 from dtree import entropy,averageGain,select, buildTree, check
-
+from drawtree_qt5 import drawTree
 
 #Assignment 0
 # I think monk2 is the most complex one since we need a lot of indivudal checks/tress to come to the conclusion. 
@@ -100,7 +100,6 @@ for i in range(6):
     print_split_entropy(m.monk3, m.attributes[i])
     print() 
 
-
 #Assignment 5
 m1 = buildTree(m.monk1, m.attributes)
 print("Monk 1 error:", 1-check(m1, m.monk1test))
@@ -110,3 +109,23 @@ print("Monk 2 error:", 1-check(m2, m.monk2test))
 
 m3 = buildTree(m.monk3, m.attributes)
 print("Monk 3 error:", 1-check(m3, m.monk3test))
+
+#drawTree(m2)
+
+#Assignment 6-7
+import random
+def partition(data, fraction):
+    ldata = list(data)
+    random.shuffle(ldata)
+    breakPoint = int(len(ldata) * fraction)
+    return ldata[:breakPoint], ldata[breakPoint:]
+
+fractions = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+
+errors = []
+for f in fractions:
+    train_data, val_data = partition(m.monk1, f)
+    tree=buildTree(train_data, m.attributes)
+    e = 1-check(tree, val_data)
+    errors.append(e)
+    print("Fraction:", f, ", Error: ", e)
