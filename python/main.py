@@ -1,6 +1,6 @@
 from monkdata import Sample
 import monkdata as m
-from dtree import entropy,averageGain
+from dtree import entropy,averageGain,select
 
 
 #Assignment 0
@@ -43,7 +43,7 @@ low_entropy = [
     Sample(True, (1,1,1,1,1,1), 7),
     Sample(True, (1,1,1,1,1,1), 8),
     Sample(True, (1,1,1,1,1,1), 9),
-    Sample(False, (1,1,1,1,1,1), 10)
+    Sample(True, (1,1,1,1,1,1), 10)
 ]  
 
 #print(entropy(high_entropy))
@@ -72,4 +72,30 @@ for i in range(0,6):
 
 # Assignment 4
 # We want to go from high to low entropy
+# Information gain is exactly this
+# We want a high starting entropy ( True,False equal split) 
+# And after applying ar ule we want it to get lower for each path invidually
 
+
+def print_split_entropy(data, attribute):
+    print(f"Splitting on {attribute}:")
+    for value in attribute.values:
+        subset = select(data, attribute, value)
+        subset_entropy = entropy(subset)
+        print(f"  Value {value}: Entropy = {subset_entropy:.4f}, Size = {len(subset)}")
+
+
+print("MONK-1 Entropy After Splitting")
+for i in range(6):  
+    print_split_entropy(m.monk2, m.attributes[i])
+    print() 
+
+print("MONK-2 Entropy After Splitting")
+for i in range(6):  
+    print_split_entropy(m.monk2, m.attributes[i])
+    print() 
+
+print("MONK-2 Entropy After Splitting")
+for i in range(6):  
+    print_split_entropy(m.monk3, m.attributes[i])
+    print() 
